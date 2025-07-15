@@ -136,7 +136,8 @@ def afiseaza_grafic_workshop_din_snowflake():
 
         # Afișăm graficul bar chart orizontal
         st.subheader("📊 Distribuția voturilor pentru intervalul workshop-ului")
-        st.bar_chart(vote_counts)
+        # https://docs.streamlit.io/develop/api-reference/charts/st.bar_chart
+        st.bar_chart(vote_counts, horizontal=True)
 
     except Exception as e:
         st.error(f"Eroare la extragerea datelor din Snowflake: {e}")
