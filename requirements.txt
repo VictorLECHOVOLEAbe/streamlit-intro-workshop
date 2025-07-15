@@ -1,0 +1,12 @@
+streamlit 
+pandas
+matplotlib
+seaborn
+
+
+# Database connectors
+psycopg2
+psycopg2-binary 
+mysql-connector-python 
+snowflake-connector-python 
+sqlalchemy
