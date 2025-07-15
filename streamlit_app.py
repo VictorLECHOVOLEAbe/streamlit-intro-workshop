@@ -71,6 +71,47 @@ def salveaza_in_snowflake(df):
     conn.close()
 
 
+
+# Verifică dacă tabelul există și îl creează dacă nu există
+def verifica_si_creeaza_tabel():
+    conn = conectare_snowflake()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS survey_responses (
+                nume STRING,
+                ore_developer INT,
+                ore_python INT,
+                librarii STRING,
+                tipuri_fisiere STRING,
+                ore_sql INT,
+                interval_workshop STRING
+            )
+        """)
+    finally:
+        cursor.close()
+        conn.close()
+
+
+# Salvează datele și afișează statusul
+def salveaza_in_snowflake(response_df):
+    try:
+        verifica_si_creeaza_tabel()
+        conn = conectare_snowflake()
+        cursor = conn.cursor()
+        for _, row in response_df.iterrows():
+            cursor.execute("""
+                INSERT INTO survey_responses (nume, ore_developer, ore_python, librarii, tipuri_fisiere, ore_sql, interval_workshop)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, tuple(row))
+        cursor.close()
+        conn.close()
+        st.success("✅ Răspunsul tău a fost salvat cu succes în Snowflake. Mulțumim!")
+    except Exception as e:
+        st.error(f"Eroare la salvarea în Snowflake: {e}")
+
+
+
 def about():
     # st.title("Despre acest workshop")
     st.header("# Introducere in Streamlit - Workshop 🎓")
@@ -139,7 +180,7 @@ def verificare_nume(nume):
 #     afiseaza_grafic_voturi()
 
 
-# def salveaza_in_snowflake(response):
+# def salveaza_in_snowflake_check(response):
 #     """
 #     Salveaza raspunsul in Snowflake si afiseaza un mesaj de succes.
 #     """
@@ -203,6 +244,7 @@ def survey_form():
         }])
 
 
+        # salveaza_in_snowflake_check(response)
         salveaza_in_snowflake(response)
         # # Numele fisierului CSV
         # csv_file = r"quizz-app\survey_responses.csv"
