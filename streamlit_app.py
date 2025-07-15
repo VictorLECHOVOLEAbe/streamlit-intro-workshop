@@ -71,7 +71,6 @@ def salveaza_in_snowflake(df):
     conn.close()
 
 
-
 # Verifică dacă tabelul există și îl creează dacă nu există
 def verifica_si_creeaza_tabel():
     conn = conectare_snowflake()
@@ -110,6 +109,37 @@ def salveaza_in_snowflake(response_df):
     except Exception as e:
         st.error(f"Eroare la salvarea în Snowflake: {e}")
 
+
+
+def afiseaza_grafic_workshop_din_snowflake():
+    try:
+        # Conectare la Snowflake
+        conn = conectare_snowflake()
+        # conn = snowflake.connector.connect(
+        #     user=st.secrets["snowflake"]["user"],
+        #     password=st.secrets["snowflake"]["password"],
+        #     account=st.secrets["snowflake"]["account"],
+        #     warehouse=st.secrets["snowflake"]["warehouse"],
+        #     database=st.secrets["snowflake"]["database"],
+        #     schema=st.secrets["snowflake"]["schema"]
+        # )
+        
+
+        # Citim toate datele din tabel
+        df = pd.read_sql("SELECT interval_workshop FROM survey_responses", conn)
+        conn.close()
+
+        # Numărăm frecvența fiecărei opțiuni
+        vote_counts = df["INTERVAL_WORKSHOP"].value_counts().reset_index()
+        vote_counts.columns = ["Interval", "Număr de voturi"]
+        vote_counts.set_index("Interval", inplace=True)
+
+        # Afișăm graficul bar chart orizontal
+        st.subheader("📊 Distribuția voturilor pentru intervalul workshop-ului")
+        st.bar_chart(vote_counts)
+
+    except Exception as e:
+        st.error(f"Eroare la extragerea datelor din Snowflake: {e}")
 
 
 def about():
