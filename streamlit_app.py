@@ -1,3 +1,201 @@
-import streamlit as st
+# running the app with the command
+# streamlit run streamlit_app.py
 
-st.write("Hello app")
+
+import streamlit as st              # For building the web app
+import pandas as pd                 # For data manipulation
+import os                           # For file operations
+
+import matplotlib.pyplot as plt     # For plotting
+import seaborn as sns               # For advanced plotting    
+
+
+# Page configuration
+st.set_page_config(
+    page_title="Survey: Experienta ta cu Python si SQL",
+    page_icon="🎓"
+    # layout="wide"   
+)
+
+# Global variables
+CSV_FILE = r"quizz-app/survey_responses.csv"
+
+def about():
+    # st.title("Despre acest workshop")
+    st.header("# Introducere in Streamlit - Workshop 🎓")
+    st.markdown("Completati va rog acest formular pentru a ma ajuta sa inteleg nivelul dvs. de experienta si disponibilitatea pentru workshop-ul introductiv in Streamlit.")
+
+    st.header("# Despre acest workshop")
+    st.markdown("""
+    Acest workshop este destinat celor care doresc sa invete cum sa foloseasca Streamlit pentru a crea aplicatii web interactive cu Python.
+    
+    **Ce veti invata:**
+    - Cum sa instalati si sa configurati Streamlit
+    - Cum sa creati interfete de utilizator simple
+    - Cum sa adaugati functionalitati interactive
+    - Cum sa vizualizati date folosind grafice si tabele
+    
+    **Cine ar trebui sa participe:**
+    - Oricine doreste sa invete Streamlit,
+    - Un minim de cunostinte de baza in Python, n-ar strica,
+    - Persoane interesate de dezvoltarea de aplicatii web rapide, folosind functionalitati built-in,
+    - Cei care doresc sa isi imbunatateasca abilitatile de vizualizare a datelor
+    - Data analytics, machine learning, data science, etc.
+    """)
+
+    st.markdown((
+    "[Streamlit](https://streamlit.io) is a Python library that allows the creation of interactive, data-driven web applications in Python."
+))
+    st.markdown((
+    "[Streamlit](https://streamlit.io) este o librarie Python care permite crearea de aplicatii interactive, data-driven in Python."
+))
+
+def verificare_nume(nume):
+    """
+    Verifica daca numele contine doar litere si spatii.
+    Verifica daca numele este valid pentru a fi folosit in aplicatie.
+    """
+    if not nume:
+        st.warning("Introduceti numele dvs. pentru a continua.")
+        return False
+
+    if len(nume) < 3:
+        st.error("Numele trebuie sa aiba cel putin 3 caractere.")
+        return False
+    if len(nume) > 50:
+        st.error("Numele nu poate depasi 50 de caractere.")
+        return False
+    if not nume.replace(" ", "").isalpha():
+        st.error("Numele trebuie sa contina doar litere si spatii.")
+        return False
+    return True
+
+def survey_form():
+
+
+    # Colectare date
+    st.subheader("Colectare date")
+
+    name = st.text_input("Numele complet:", 
+                        placeholder="Introduceti numele dvs. aici", 
+                        help="Acest camp este obligatoriu!"
+                    )
+    # verificare nume
+    if not verificare_nume(name):
+        st.stop()
+
+    developer_hours = st.number_input("Cum ai descrie experienta ta ca developer exprimata in ore de active coding time?", min_value=0, step=1)
+
+    python_hours = st.number_input("Cum ai descrie experienta ta ca Python developer exprimata in ore de active coding time?", min_value=0, step=1)
+
+    libraries = st.multiselect(
+        "Cu ce librarii/framework-uri Python ai lucrat?",
+        ["NumPy", "Pandas", "Matplotlib", "Seaborn", "Flask", "Django", "Streamlit", "Alta librarie", "Niciuna"]
+    )
+
+    file_types = st.multiselect(
+        "Cu ce tipuri de fisiere ai lucrat si esti familiar?",
+        [".csv", ".json", ".xlsx", ".sql", ".txt", ".xml", "Alt tip"]
+    )
+
+    sql_hours = st.number_input("Cum ai descrie experienta ta ca SQL developer exprimata in ore de active coding time?", min_value=0, step=1)
+
+
+
+
+    workshop_time = st.radio(
+        "Care dintre urmatoarele intervale ti s-ar potrivi pentru un workshop introductiv in Streamlit?",
+        ("Vineri 09:00-12:00", "Vineri 13:00-16:00")
+    )
+
+        # Buton de trimitere
+    if st.button("Trimite raspunsul"):
+        # Structuram datele intr-un DataFrame
+        response = pd.DataFrame([{
+            "Nume": name,
+            "Ore Developer": developer_hours,
+            "Ore Python": python_hours,
+            "Librarii": ", ".join(libraries),
+            "Tipuri fisiere": ", ".join(file_types),
+            "Ore SQL": sql_hours,
+            "Interval workshop": workshop_time
+        }])
+
+        # Numele fisierului CSV
+        csv_file = r"quizz-app\survey_responses.csv"
+
+        # Verificam daca fisierul exista deja
+        if os.path.exists(csv_file):
+            existing = pd.read_csv(csv_file)
+            updated = pd.concat([existing, response], ignore_index=True)
+            updated.to_csv(csv_file, index=False)
+        else:
+            response.to_csv(csv_file, index=False)
+
+        st.success("✅ Raspunsul tau a fost salvat cu succes. Multumim!")
+
+        afiseaza_grafic_voturi()
+
+def afiseaza_grafic_voturi():
+    # import matplotlib.pyplot as plt
+    # import seaborn as sns
+
+    st.subheader("📊 Rezultatele voturilor pentru intervalul workshop-ului")
+
+    # Verificam daca fisierul CSV exista
+    if not os.path.exists(CSV_FILE):
+        st.warning("Nu exista date disponibile. Trimite cel putin un raspuns pentru a vedea rezultatele.")
+        return
+    
+    # Citim datele din fisierul CSV
+    # import pandas as pd
+    # import matplotlib.pyplot as plt
+    try:
+
+        
+        df = pd.read_csv(CSV_FILE)
+        vote_counts = df["Interval workshop"].value_counts()
+
+        # Generez automat o lista de culori pentru bar chart
+        colors = sns.color_palette("husl", n_colors=len(vote_counts))  # Folosim o paleta de culori din Seaborn
+
+
+        # # https://matplotlib.org/stable/tutorials/colors/colormaps.html
+        # colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b']  # albastru, portocaliu, verde, rosu, mov, maro
+        fig, ax = plt.subplots(figsize=(10, 1 * len(vote_counts)))  # Ajustam inaltimea in functie de numarul de voturi
+        
+        # https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html
+
+        bars = ax.barh(vote_counts.index, vote_counts.values, color=colors[:len(vote_counts)])
+        ax.set_xlabel("Numar de voturi")
+        ax.set_title("Distributia voturilor pentru intervalul workshop-ului", fontsize=14, fontweight='bold', loc='center')
+
+        for bar in bars:
+            width = bar.get_width()
+            ax.text(width + 0.1, bar.get_y() + bar.get_height()/2, f'{int(width)}', va='center')
+
+        st.pyplot(fig)
+
+
+    except FileNotFoundError:
+        st.warning("Fisierul cu raspunsuri nu a fost gasit. Trimite cel putin un raspuns pentru a vedea rezultatele.")
+
+
+
+    st.markdown("---")
+
+
+
+
+
+
+
+
+
+
+def main():
+    about()
+    survey_form()
+
+if __name__ == "__main__":
+    main()
