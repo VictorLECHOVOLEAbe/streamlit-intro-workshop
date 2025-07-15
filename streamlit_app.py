@@ -290,6 +290,7 @@ def survey_form():
         # st.success("✅ Raspunsul tau a fost salvat cu succes. Multumim!")
 
         # afiseaza_grafic_voturi()
+        afiseaza_grafic_workshop_din_snowflake()
 
 def afiseaza_grafic_voturi():
     # import matplotlib.pyplot as plt
