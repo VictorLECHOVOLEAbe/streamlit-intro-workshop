@@ -18,7 +18,7 @@ st.set_page_config(
 )
 
 # Global variables
-CSV_FILE = r"quizz-app/survey_responses.csv"
+CSV_FILE = r"survey_responses.csv"
 
 def about():
     # st.title("Despre acest workshop")
@@ -43,9 +43,6 @@ def about():
     - Data analytics, machine learning, data science, etc.
     """)
 
-    st.markdown((
-    "[Streamlit](https://streamlit.io) is a Python library that allows the creation of interactive, data-driven web applications in Python."
-))
     st.markdown((
     "[Streamlit](https://streamlit.io) este o librarie Python care permite crearea de aplicatii interactive, data-driven in Python."
 ))
