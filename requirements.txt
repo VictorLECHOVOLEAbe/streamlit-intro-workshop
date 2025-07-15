@@ -4,9 +4,9 @@ matplotlib
 seaborn
 
 
-# Database connectors
-psycopg2
+## Database connectors
+# psycopg2
 # psycopg2-binary 
-mysql-connector-python 
+# mysql-connector-python 
 snowflake-connector-python 
-sqlalchemy
+# sqlalchemy
