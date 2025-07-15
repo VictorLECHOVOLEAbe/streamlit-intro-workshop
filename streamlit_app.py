@@ -1,14 +1,12 @@
 # running the app with the command
 # streamlit run streamlit_app.py
 
-
 import streamlit as st              # For building the web app
 import pandas as pd                 # For data manipulation
-import os                           # For file operations
+# import os                           # For file operations
 
-import matplotlib.pyplot as plt     # For plotting
-import seaborn as sns               # For advanced plotting    
-
+# import matplotlib.pyplot as plt     # For plotting
+# import seaborn as sns               # For advanced plotting    
 import snowflake.connector          # For connecting to Snowflake
 
 
@@ -58,7 +56,7 @@ def conectare_snowflake():
     )
 
 
-# Salvare răspunsuri în Snowflake
+# Salvare raspunsuri în Snowflake
 def salveaza_in_snowflake(df):
     conn = conectare_snowflake()
     cursor = conn.cursor()
@@ -71,7 +69,7 @@ def salveaza_in_snowflake(df):
     conn.close()
 
 
-# Verifică dacă tabelul există și îl creează dacă nu există
+# Verifica daca tabelul exista și îl creeaza daca nu exista
 def verifica_si_creeaza_tabel():
     conn = conectare_snowflake()
     cursor = conn.cursor()
@@ -92,7 +90,7 @@ def verifica_si_creeaza_tabel():
         conn.close()
 
 
-# Salvează datele și afișează statusul
+# Salveaza datele și afișeaza statusul
 def salveaza_in_snowflake(response_df):
     try:
         verifica_si_creeaza_tabel()
@@ -105,7 +103,7 @@ def salveaza_in_snowflake(response_df):
             """, tuple(row))
         cursor.close()
         conn.close()
-        st.success("✅ Răspunsul tău a fost salvat cu succes în Snowflake. Mulțumim!")
+        st.success("✅ Raspunsul tau a fost salvat cu succes în Snowflake. Multumim!")
     except Exception as e:
         st.error(f"Eroare la salvarea în Snowflake: {e}")
 
@@ -129,15 +127,15 @@ def afiseaza_grafic_workshop_din_snowflake():
         df = pd.read_sql("SELECT interval_workshop FROM survey_responses", conn)
         conn.close()
 
-        # Numărăm frecvența fiecărei opțiuni
+        # Numaram frecventa fiecarei optiuni
         vote_counts = df["INTERVAL_WORKSHOP"].value_counts().reset_index()
-        vote_counts.columns = ["Interval", "Număr de voturi"]
+        vote_counts.columns = ["Interval", "Numar de voturi"]
         vote_counts.set_index("Interval", inplace=True)
 
-        # Afișăm graficul bar chart orizontal
-        st.subheader("📊 Distribuția voturilor pentru intervalul workshop-ului")
+        # Afișam graficul bar chart orizontal
+        st.header("📊 Distributia voturilor pentru intervalul workshop-ului")
         # https://docs.streamlit.io/develop/api-reference/charts/st.bar_chart
-        st.bar_chart(vote_counts, horizontal=True)
+        st.bar_chart(vote_counts, color="site", horizontal=True)
 
     except Exception as e:
         st.error(f"Eroare la extragerea datelor din Snowflake: {e}")
@@ -224,10 +222,8 @@ def verificare_nume(nume):
 #         st.warning("Raspunsul nu a fost salvat. Incearca din nou mai tarziu.")
 
 def survey_form():
-
-
     # Colectare date
-    st.subheader("Colectare date")
+    st.header("# Sa ne cunoastem mai bine")
 
     name = st.text_input("Numele complet:", 
                         placeholder="Introduceti numele dvs. aici", 
