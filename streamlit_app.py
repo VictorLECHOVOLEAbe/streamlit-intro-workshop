@@ -9,6 +9,8 @@ import os                           # For file operations
 import matplotlib.pyplot as plt     # For plotting
 import seaborn as sns               # For advanced plotting    
 
+import snowflake.connector          # For connecting to Snowflake
+
 
 # Page configuration
 st.set_page_config(
@@ -19,6 +21,55 @@ st.set_page_config(
 
 # Global variables
 CSV_FILE = r"survey_responses.csv"
+
+
+
+# import snowflake.connector
+# def salveaza_in_snowflake(dataframe):
+#     conn = snowflake.connector.connect(
+#         user=st.secrets["snowflake"]["user"],
+#         password=st.secrets["snowflake"]["password"],
+#         account=st.secrets["snowflake"]["account"],
+#         warehouse=st.secrets["snowflake"]["warehouse"],
+#         database=st.secrets["snowflake"]["database"],
+#         schema=st.secrets["snowflake"]["schema"]
+#     )
+#     cursor = conn.cursor()
+
+#     for _, row in dataframe.iterrows():
+#         cursor.execute(f\"\"\"
+#             INSERT INTO survey_responses (nume, ore_python, librarii, tipuri_fisiere, ore_sql, interval_workshop)
+#             VALUES (%s, %s, %s, %s, %s, %s)
+#         \"\"\", tuple(row))
+
+#     cursor.close()
+#     conn.close()
+
+
+# Conectare la Snowflake
+def conectare_snowflake():
+    return snowflake.connector.connect(
+        user=st.secrets["snowflake"]["user"],
+        password=st.secrets["snowflake"]["password"],
+        account=st.secrets["snowflake"]["account"],
+        warehouse=st.secrets["snowflake"]["warehouse"],
+        database=st.secrets["snowflake"]["database"],
+        schema=st.secrets["snowflake"]["schema"]
+    )
+
+
+# Salvare răspunsuri în Snowflake
+def salveaza_in_snowflake(df):
+    conn = conectare_snowflake()
+    cursor = conn.cursor()
+    for _, row in df.iterrows():
+        cursor.execute("""
+            INSERT INTO survey_responses (nume, ore_python, librarii, tipuri_fisiere, ore_sql, interval_workshop)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, tuple(row))
+    cursor.close()
+    conn.close()
+
 
 def about():
     # st.title("Despre acest workshop")
@@ -66,6 +117,39 @@ def verificare_nume(nume):
         st.error("Numele trebuie sa contina doar litere si spatii.")
         return False
     return True
+
+
+
+# def salveaza_si_afiseaza_status(response):
+#     """
+#     Salveaza raspunsul in fisierul CSV si afiseaza un mesaj de succes.
+#     """
+#     # Verificam daca fisierul CSV exista deja
+#     if os.path.exists(CSV_FILE):
+#         existing = pd.read_csv(CSV_FILE)
+#         updated = pd.concat([existing, response], ignore_index=True)
+#         updated.to_csv(CSV_FILE, index=False)
+#     else:
+#         response.to_csv(CSV_FILE, index=False)
+
+#     # Salveaza in Snowflake
+#     salveaza_in_snowflake(response)
+
+#     st.success("✅ Raspunsul tau a fost salvat cu succes. Multumim!")
+#     afiseaza_grafic_voturi()
+
+
+# def salveaza_in_snowflake(response):
+#     """
+#     Salveaza raspunsul in Snowflake si afiseaza un mesaj de succes.
+#     """
+#     try:
+#         salveaza_in_snowflake(response)
+#         st.success("✅ Raspunsul tau a fost salvat cu succes in Snowflake. Multumim!")
+#         afiseaza_grafic_voturi()
+#     except Exception as e:
+#         st.error(f"❌ Eroare la salvarea in Snowflake: {e}")
+#         st.warning("Raspunsul nu a fost salvat. Incearca din nou mai tarziu.")
 
 def survey_form():
 
@@ -118,20 +202,22 @@ def survey_form():
             "Interval workshop": workshop_time
         }])
 
-        # Numele fisierului CSV
-        csv_file = r"quizz-app\survey_responses.csv"
 
-        # Verificam daca fisierul exista deja
-        if os.path.exists(csv_file):
-            existing = pd.read_csv(csv_file)
-            updated = pd.concat([existing, response], ignore_index=True)
-            updated.to_csv(csv_file, index=False)
-        else:
-            response.to_csv(csv_file, index=False)
+        salveaza_in_snowflake(response)
+        # # Numele fisierului CSV
+        # csv_file = r"quizz-app\survey_responses.csv"
 
-        st.success("✅ Raspunsul tau a fost salvat cu succes. Multumim!")
+        # # Verificam daca fisierul exista deja
+        # if os.path.exists(csv_file):
+        #     existing = pd.read_csv(csv_file)
+        #     updated = pd.concat([existing, response], ignore_index=True)
+        #     updated.to_csv(csv_file, index=False)
+        # else:
+        #     response.to_csv(csv_file, index=False)
 
-        afiseaza_grafic_voturi()
+        # st.success("✅ Raspunsul tau a fost salvat cu succes. Multumim!")
+
+        # afiseaza_grafic_voturi()
 
 def afiseaza_grafic_voturi():
     # import matplotlib.pyplot as plt
