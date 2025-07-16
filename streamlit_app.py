@@ -287,8 +287,6 @@ def afiseaza_grafic_voturi_din_csv():
     # import pandas as pd
     # import matplotlib.pyplot as plt
     try:
-
-        
         df = pd.read_csv(CSV_FILE)
         vote_counts = df["Interval workshop"].value_counts()
 
