@@ -17,31 +17,72 @@ st.set_page_config(
     # layout="wide"   
 )
 
-# Global variables
-CSV_FILE = r"survey_responses.csv"
+# # Global variables
+# CSV_FILE = r"survey_responses.csv"
 
 
+def about():
+    # st.title("Despre acest workshop")
+    st.header("# Introducere in Streamlit - Workshop 🎓")
+    st.markdown("Completati va rog acest formular pentru a ma ajuta sa inteleg nivelul dvs. de experienta si disponibilitatea pentru workshop-ul introductiv in Streamlit.")
 
-# import snowflake.connector
-# def salveaza_in_snowflake(dataframe):
-#     conn = snowflake.connector.connect(
-#         user=st.secrets["snowflake"]["user"],
-#         password=st.secrets["snowflake"]["password"],
-#         account=st.secrets["snowflake"]["account"],
-#         warehouse=st.secrets["snowflake"]["warehouse"],
-#         database=st.secrets["snowflake"]["database"],
-#         schema=st.secrets["snowflake"]["schema"]
-#     )
-#     cursor = conn.cursor()
+    st.header("# Despre acest workshop")
+    st.markdown("""
+    Acest workshop este destinat celor care doresc sa invete cum sa foloseasca Streamlit pentru a crea aplicatii web interactive cu Python.
+    
+    **Ce veti invata:**
+    - Cum sa instalati si sa configurati Streamlit
+    - Cum sa creati interfete de utilizator simple
+    - Cum sa adaugati functionalitati interactive
+    - Cum sa vizualizati date folosind grafice si tabele
+    
+    **Cine ar trebui sa participe:**
+    - Oricine doreste sa invete Streamlit,
+    - Un minim de cunostinte de baza in Python, n-ar strica,
+    - Persoane interesate de dezvoltarea de aplicatii web rapide, folosind functionalitati built-in,
+    - Cei care doresc sa isi imbunatateasca abilitatile de vizualizare a datelor
+    - Data analytics, machine learning, data science, etc.
+    """)
 
-#     for _, row in dataframe.iterrows():
-#         cursor.execute(f\"\"\"
-#             INSERT INTO survey_responses (nume, ore_python, librarii, tipuri_fisiere, ore_sql, interval_workshop)
-#             VALUES (%s, %s, %s, %s, %s, %s)
-#         \"\"\", tuple(row))
+    st.markdown((
+    "[Streamlit](https://streamlit.io) este o librarie Python care permite crearea de aplicatii interactive, data-driven in Python."
+))
 
-#     cursor.close()
-#     conn.close()
+def citire_afisare_markdown(file_path):
+    """
+    Citeste si afiseaza continutul unui fisier markdown.
+    """
+    try:
+        with open(file_path, "r", encoding="utf-8") as file:
+            content = file.read()
+            st.markdown(content, unsafe_allow_html=True)
+    except FileNotFoundError:
+        st.error(f"Fisierul {file_path} nu a fost gasit.")
+    except Exception as e:
+        st.error(f"Eroare la citirea fisierului: {e}")
+
+
+def verificare_nume(nume):
+    """
+    Verifica daca numele contine doar litere si spatii.
+    Verifica daca numele este valid pentru a fi folosit in aplicatie.
+    """
+    if not nume:
+        st.warning("Introduceti numele dvs. pentru a continua.")
+        return False
+
+    if len(nume) < 3:
+        st.error("Numele trebuie sa aiba cel putin 3 caractere.")
+        return False
+    if len(nume) > 50:
+        st.error("Numele nu poate depasi 50 de caractere.")
+        return False
+    if not nume.replace(" ", "").isalpha():
+        st.error("Numele trebuie sa contina doar litere si spatii.")
+        return False
+    return True
+
+
 
 
 # Conectare la Snowflake
@@ -135,58 +176,12 @@ def afiseaza_grafic_workshop_din_snowflake():
         # Afișam graficul bar chart orizontal
         st.header("📊 Distributia voturilor pentru intervalul workshop-ului")
         # https://docs.streamlit.io/develop/api-reference/charts/st.bar_chart
-        st.bar_chart(vote_counts, color="site", horizontal=True)
-
+        
+        st.bar_chart(vote_counts, color=["#ffaa00","#ffaa0088"], horizontal=True)
+        
     except Exception as e:
         st.error(f"Eroare la extragerea datelor din Snowflake: {e}")
 
-
-def about():
-    # st.title("Despre acest workshop")
-    st.header("# Introducere in Streamlit - Workshop 🎓")
-    st.markdown("Completati va rog acest formular pentru a ma ajuta sa inteleg nivelul dvs. de experienta si disponibilitatea pentru workshop-ul introductiv in Streamlit.")
-
-    st.header("# Despre acest workshop")
-    st.markdown("""
-    Acest workshop este destinat celor care doresc sa invete cum sa foloseasca Streamlit pentru a crea aplicatii web interactive cu Python.
-    
-    **Ce veti invata:**
-    - Cum sa instalati si sa configurati Streamlit
-    - Cum sa creati interfete de utilizator simple
-    - Cum sa adaugati functionalitati interactive
-    - Cum sa vizualizati date folosind grafice si tabele
-    
-    **Cine ar trebui sa participe:**
-    - Oricine doreste sa invete Streamlit,
-    - Un minim de cunostinte de baza in Python, n-ar strica,
-    - Persoane interesate de dezvoltarea de aplicatii web rapide, folosind functionalitati built-in,
-    - Cei care doresc sa isi imbunatateasca abilitatile de vizualizare a datelor
-    - Data analytics, machine learning, data science, etc.
-    """)
-
-    st.markdown((
-    "[Streamlit](https://streamlit.io) este o librarie Python care permite crearea de aplicatii interactive, data-driven in Python."
-))
-
-def verificare_nume(nume):
-    """
-    Verifica daca numele contine doar litere si spatii.
-    Verifica daca numele este valid pentru a fi folosit in aplicatie.
-    """
-    if not nume:
-        st.warning("Introduceti numele dvs. pentru a continua.")
-        return False
-
-    if len(nume) < 3:
-        st.error("Numele trebuie sa aiba cel putin 3 caractere.")
-        return False
-    if len(nume) > 50:
-        st.error("Numele nu poate depasi 50 de caractere.")
-        return False
-    if not nume.replace(" ", "").isalpha():
-        st.error("Numele trebuie sa contina doar litere si spatii.")
-        return False
-    return True
 
 
 
@@ -206,20 +201,8 @@ def verificare_nume(nume):
 #     salveaza_in_snowflake(response)
 
 #     st.success("✅ Raspunsul tau a fost salvat cu succes. Multumim!")
-#     afiseaza_grafic_voturi()
+#     afiseaza_grafic_voturi_din_csv()
 
-
-# def salveaza_in_snowflake_check(response):
-#     """
-#     Salveaza raspunsul in Snowflake si afiseaza un mesaj de succes.
-#     """
-#     try:
-#         salveaza_in_snowflake(response)
-#         st.success("✅ Raspunsul tau a fost salvat cu succes in Snowflake. Multumim!")
-#         afiseaza_grafic_voturi()
-#     except Exception as e:
-#         st.error(f"❌ Eroare la salvarea in Snowflake: {e}")
-#         st.warning("Raspunsul nu a fost salvat. Incearca din nou mai tarziu.")
 
 def survey_form():
     # Colectare date
@@ -286,10 +269,10 @@ def survey_form():
 
         # st.success("✅ Raspunsul tau a fost salvat cu succes. Multumim!")
 
-        # afiseaza_grafic_voturi()
+        # afiseaza_grafic_voturi_din_csv()
         afiseaza_grafic_workshop_din_snowflake()
 
-def afiseaza_grafic_voturi():
+def afiseaza_grafic_voturi_din_csv():
     # import matplotlib.pyplot as plt
     # import seaborn as sns
 
@@ -348,6 +331,7 @@ def afiseaza_grafic_voturi():
 
 def main():
     about()
+    citire_afisare_markdown("workshop_requirements.md")
     survey_form()
 
 if __name__ == "__main__":
