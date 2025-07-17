@@ -284,9 +284,18 @@ def display_workshop_proposed_time_from_snowflake():
         # https://docs.streamlit.io/develop/api-reference/charts/st.bar_chart
         
         # st.bar_chart(vote_counts, color=["#ffaa00","#0088ffb5"], horizontal=True)
-        st.bar_chart(vote_counts, color=["#A3C4F3", "#90D5EC", "#B5EAD7"], horizontal=True)
-
+        # st.bar_chart(vote_counts, color=["#A3C4F3", "#90D5EC", "#B5EAD7"], horizontal=True)
+        # still issue: Error retrieving data from Snowflake: The list of colors ['#A3C4F3', '#90D5EC', '#B5EAD7'] must have the same length as the list of columns to be colored ['Votes Number'].
+        st.bar_chart(vote_counts, 
+                     horizontal=True, 
+                     title="Vote distribution for the workshop time interval")
         
+        # the bar chart with title and colors
+        # st.bar_chart(vote_counts, 
+        #              color=["#A3C4F3", "#90D5EC", "#B5EAD7"], 
+        #              horizontal=True, 
+        #              title="Vote distribution for the workshop time interval")
+    
     except Exception as e:
         st.error(f"Error retrieving data from Snowflake: {e}")
         
