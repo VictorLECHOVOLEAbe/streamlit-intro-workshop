@@ -421,7 +421,8 @@ def display_graph_votes_from_csv():
 
 
 def main():
-    about()
+    # about()
+    read_and_display_markdown("about.md")
     read_and_display_markdown("workshop_requirements.md")
     survey_form()
 
