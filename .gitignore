@@ -1,6 +1,7 @@
 # user-specific files
 .streamlit/
 .gitignore
+.code-workspace
 
 
 # Byte-compiled / optimized / DLL files
