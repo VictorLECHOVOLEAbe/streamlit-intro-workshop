@@ -185,11 +185,10 @@ def snowflake_insert_into(response_df):
         #                 VALUES (%s, %s, %s, %s, %s, %s, %s)
         #             """, tuple(row))
 
-        # st.success("✅ Raspunsul tau a fost salvat cu succes în Snowflake. Multumim!")
         st.success("✅ Your response has been successfully saved in Snowflake. Thank you!")
         st.balloons()  # Optional: Show balloons animation on success
     except Exception as e:
-        # st.error(f"Eroare la salvarea în Snowflake: {e}")
+
         st.error(f"Error saving to Snowflake: {e}")
 
 
@@ -284,10 +283,11 @@ def display_workshop_proposed_time_from_snowflake():
         st.header("📊Vote distribution for the workshop time interval")
         # https://docs.streamlit.io/develop/api-reference/charts/st.bar_chart
         
-        st.bar_chart(vote_counts, color=["#ffaa00","#0088ffb5"], horizontal=True)
+        # st.bar_chart(vote_counts, color=["#ffaa00","#0088ffb5"], horizontal=True)
+        st.bar_chart(vote_counts, color=["#A3C4F3", "#90D5EC", "#B5EAD7"], horizontal=True)
+
         
     except Exception as e:
-        st.error(f"Eroare la extragerea datelor din Snowflake: {e}")
         st.error(f"Error retrieving data from Snowflake: {e}")
         
 
