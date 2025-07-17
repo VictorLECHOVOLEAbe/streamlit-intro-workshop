@@ -2,7 +2,7 @@
 
 Please **read about the workshop**, try to **get the requirements** and please **fill the form** to help me understand your experience level and availability for the introductory Streamlit workshop.
 
-## About this workshop
+## #About this workshop
 
 This workshop is intended for those who want to learn how to use Streamlit to create interactive web applications with Python.
 

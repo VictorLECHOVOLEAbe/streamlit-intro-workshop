@@ -139,21 +139,21 @@ def create_if_not_exists_table():
         cursor.close()
         conn.close()
 
-    # Approach 2: Using a context manager to ensure the connection is closed automatically
-    # We can use also with statement to ensure the connection is closed automatically
-    with snowflake_connection() as conn:
-        with conn.cursor() as cursor:
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS survey_responses (
-                    name STRING,
-                    developer_hours INT,
-                    python_hours INT,
-                    libraries STRING,
-                    file_types STRING,
-                    sql_hours INT,
-                    workshop_proposed_time STRING
-                )
-            """)
+    # # Approach 2: Using a context manager to ensure the connection is closed automatically
+    # # We can use also with statement to ensure the connection is closed automatically
+    # with snowflake_connection() as conn:
+    #     with conn.cursor() as cursor:
+    #         cursor.execute("""
+    #             CREATE TABLE IF NOT EXISTS survey_responses (
+    #                 name STRING,
+    #                 developer_hours INT,
+    #                 python_hours INT,
+    #                 libraries STRING,
+    #                 file_types STRING,
+    #                 sql_hours INT,
+    #                 workshop_proposed_time STRING
+    #             )
+    #         """)
 
 # Snowflake insert function
 # This function inserts the response DataFrame into the Snowflake table
@@ -176,14 +176,14 @@ def snowflake_insert_into(response_df):
         cursor.close()
         conn.close()
         
-        # Using approach 2: Using a context manager to ensure the connection is closed automatically
-        with snowflake_connection() as conn:
-            with conn.cursor() as cursor:
-                for _, row in response_df.iterrows():
-                    cursor.execute("""
-                        INSERT INTO survey_responses (name, developer_hours, python_hours, libraries, file_types, sql_hours, workshop_proposed_time)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s)
-                    """, tuple(row))
+        # # Using approach 2: Using a context manager to ensure the connection is closed automatically
+        # with snowflake_connection() as conn:
+        #     with conn.cursor() as cursor:
+        #         for _, row in response_df.iterrows():
+        #             cursor.execute("""
+        #                 INSERT INTO survey_responses (name, developer_hours, python_hours, libraries, file_types, sql_hours, workshop_proposed_time)
+        #                 VALUES (%s, %s, %s, %s, %s, %s, %s)
+        #             """, tuple(row))
 
         # st.success("✅ Raspunsul tau a fost salvat cu succes în Snowflake. Multumim!")
         st.success("✅ Your response has been successfully saved in Snowflake. Thank you!")
@@ -231,9 +231,9 @@ def display_workshop_proposed_time_from_snowflake():
         df = pd.read_sql("SELECT workshop_proposed_time FROM survey_responses", conn)
         conn.close()
 
-        # Approach 4: using chunks to read the SQL query results directly into a DataFrame
-        df = pd.read_sql("SELECT workshop_proposed_time FROM survey_responses", conn, chunksize=1000)
-        conn.close()   
+        # # Approach 4: using chunks to read the SQL query results directly into a DataFrame
+        # df = pd.read_sql("SELECT workshop_proposed_time FROM survey_responses", conn, chunksize=1000)
+        # conn.close()   
 
         # # # Approach 5: Using fetch_pandas_all() to read the SQL query results directly into a DataFrame
         # # https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-pandas#migrating-to-pandas-dataframes
