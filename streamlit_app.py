@@ -101,6 +101,13 @@ def validate_email(email):
     if "@" not in email or "." not in email:
         st.error("Please enter a valid email address.")
         return False
+    # regex validation for email to consider @ followed by a domain and a top-level domain
+    import re
+    email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    if not re.match(email_regex, email):
+        st.error("Please enter a valid email address.")
+        return False
+    # If all checks pass, return True
     return True
 
 
