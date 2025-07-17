@@ -13,9 +13,9 @@ import snowflake.connector          # For connecting to Snowflake
 
 # Page configuration
 st.set_page_config(
-    page_title="Survey: Your Experience with Python and SQL",
-    page_icon="🎓"
-    # layout="wide"   
+    page_title="Intro to Streamlit Workshop",
+    page_icon="🎓",
+    layout="wide"   
 )
 
 
