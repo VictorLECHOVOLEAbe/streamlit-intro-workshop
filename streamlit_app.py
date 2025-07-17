@@ -84,6 +84,24 @@ def validate_name(name):
         return False
     return True
 
+def validate_email(email):
+    """
+    Validates the email format.
+    """
+    if not email:
+        st.warning("Please enter your email to continue.")
+        return False
+
+    if len(email) < 5:
+        st.error("The email must have at least 5 characters.")
+        return False
+    if len(email) > 100:
+        st.error("The email cannot exceed 100 characters.")
+        return False
+    if "@" not in email or "." not in email:
+        st.error("Please enter a valid email address.")
+        return False
+    return True
 
 
 # Connexion to Snowflake
@@ -108,8 +126,8 @@ def snowflake_insert_into(df):
     cursor = conn.cursor()
     for _, row in df.iterrows():
         cursor.execute("""
-            INSERT INTO survey_responses (name, python_hours, libraries, file_types, sql_hours, workshop_proposed_time)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            INSERT INTO survey_responses (name, email, developer_hours, python_hours, libraries, file_types, sql_hours, workshop_proposed_time)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """, tuple(row))
     cursor.close()
     conn.close()
@@ -127,6 +145,7 @@ def create_if_not_exists_table():
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS survey_responses (
                 name STRING,
+                email STRING,
                 developer_hours INT,
                 python_hours INT,
                 libraries STRING,
@@ -146,6 +165,7 @@ def create_if_not_exists_table():
     #         cursor.execute("""
     #             CREATE TABLE IF NOT EXISTS survey_responses (
     #                 name STRING,
+    #                 email STRING,
     #                 developer_hours INT,
     #                 python_hours INT,
     #                 libraries STRING,
@@ -170,8 +190,8 @@ def snowflake_insert_into(response_df):
         cursor = conn.cursor()
         for _, row in response_df.iterrows():
             cursor.execute("""
-                INSERT INTO survey_responses (name, developer_hours, python_hours, libraries, file_types, sql_hours, workshop_proposed_time)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO survey_responses (name, email, developer_hours, python_hours, libraries, file_types, sql_hours, workshop_proposed_time)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """, tuple(row))
         cursor.close()
         conn.close()
@@ -181,8 +201,8 @@ def snowflake_insert_into(response_df):
         #     with conn.cursor() as cursor:
         #         for _, row in response_df.iterrows():
         #             cursor.execute("""
-        #                 INSERT INTO survey_responses (name, developer_hours, python_hours, libraries, file_types, sql_hours, workshop_proposed_time)
-        #                 VALUES (%s, %s, %s, %s, %s, %s, %s)
+        #                 INSERT INTO survey_responses (name, email, developer_hours, python_hours, libraries, file_types, sql_hours, workshop_proposed_time)
+        #                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         #             """, tuple(row))
 
         st.success("✅ Your response has been successfully saved in Snowflake. Thank you!")
@@ -329,6 +349,13 @@ def survey_form():
     if not validate_name(name):
         st.stop()
 
+    email = st.text_input("Email:", 
+                        placeholder="Enter your email here", 
+                        help="This field is required!"
+                    )
+    if not validate_email(email):
+        st.stop()
+
     developer_hours = st.number_input("How would you describe your experience as a developer (active coding hours)?", min_value=0, step=1)
 
     python_hours = st.number_input("How would you describe your experience as a Python developer (active coding hours)?", min_value=0, step=1)
@@ -355,6 +382,7 @@ def survey_form():
         # Structure the data in a DataFrame
         response = pd.DataFrame([{
             "Full Name": name,
+            "Email": email, 
             "Developer Hours": developer_hours,
             "Python Hours": python_hours,
             "Libraries": ", ".join(libraries),
@@ -367,53 +395,53 @@ def survey_form():
         snowflake_insert_into(response)
         display_workshop_proposed_time_from_snowflake()
 
-def display_graph_votes_from_csv():
-    # import matplotlib.pyplot as plt
-    # import seaborn as sns
+# def display_graph_votes_from_csv():
+#     # import matplotlib.pyplot as plt
+#     # import seaborn as sns
 
-    st.header("📊 Rezultatele voturilor pentru intervalul workshop-ului")
+#     st.header("📊 Rezultatele voturilor pentru intervalul workshop-ului")
 
-    # checking if the CSV file exists using os.path.exists
-    # import os
-    if not os.path.exists(CSV_FILE):
-        st.warning("Nu exista date disponibile. Trimite cel putin un raspuns pentru a vedea rezultatele.")
-        return
+#     # checking if the CSV file exists using os.path.exists
+#     # import os
+#     if not os.path.exists(CSV_FILE):
+#         st.warning("Nu exista date disponibile. Trimite cel putin un raspuns pentru a vedea rezultatele.")
+#         return
     
-    # Reading data from the csv using pandas
-    # import pandas as pd
-    # import matplotlib.pyplot as plt
-    try:
-        df = pd.read_csv(CSV_FILE)
-        vote_counts = df["Interval workshop"].value_counts()
+#     # Reading data from the csv using pandas
+#     # import pandas as pd
+#     # import matplotlib.pyplot as plt
+#     try:
+#         df = pd.read_csv(CSV_FILE)
+#         vote_counts = df["Interval workshop"].value_counts()
 
-        # Automatic generation of a color pallet to use in the bar chart
-        colors = sns.color_palette("husl", n_colors=len(vote_counts))  # using a palet color from Seaborn
+#         # Automatic generation of a color pallet to use in the bar chart
+#         colors = sns.color_palette("husl", n_colors=len(vote_counts))  # using a palet color from Seaborn
 
 
-        # # https://matplotlib.org/stable/tutorials/colors/colormaps.html
-        # colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b']  # albastru, portocaliu, verde, rosu, mov, maro
-        fig, ax = plt.subplots(figsize=(10, 1 * len(vote_counts)))  # Ajust the height of the figure based on the number of vote counts
+#         # # https://matplotlib.org/stable/tutorials/colors/colormaps.html
+#         # colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b']  # albastru, portocaliu, verde, rosu, mov, maro
+#         fig, ax = plt.subplots(figsize=(10, 1 * len(vote_counts)))  # Ajust the height of the figure based on the number of vote counts
         
-        # https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html
+#         # https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html
 
-        bars = ax.barh(vote_counts.index, vote_counts.values, color=colors[:len(vote_counts)])
-        ax.set_xlabel("Votes Number")
-        ax.set_title("📊Votes distribution", fontsize=14, fontweight='bold', loc='center')
+#         bars = ax.barh(vote_counts.index, vote_counts.values, color=colors[:len(vote_counts)])
+#         ax.set_xlabel("Votes Number")
+#         ax.set_title("📊Votes distribution", fontsize=14, fontweight='bold', loc='center')
 
-        for bar in bars:
-            width = bar.get_width()
-            ax.text(width + 0.1, bar.get_y() + bar.get_height()/2, f'{int(width)}', va='center')
+#         for bar in bars:
+#             width = bar.get_width()
+#             ax.text(width + 0.1, bar.get_y() + bar.get_height()/2, f'{int(width)}', va='center')
 
-        st.pyplot(fig)
-
-
-    except FileNotFoundError:
-        st.warning("The file with responses was not found. Please submit at least one response to see the results.")
-    except Exception as e:
-        st.error(f"An error occurred while reading the file: {e}")
+#         st.pyplot(fig)
 
 
-    st.markdown("---")
+#     except FileNotFoundError:
+#         st.warning("The file with responses was not found. Please submit at least one response to see the results.")
+#     except Exception as e:
+#         st.error(f"An error occurred while reading the file: {e}")
+
+
+#     st.markdown("---")
 
 
 
