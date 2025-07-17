@@ -1,6 +1,6 @@
 # Introduction to Streamlit - Workshop 🎓
 
-Please complete this form to help me understand your experience level and availability for the introductory Streamlit workshop.
+Please **read about the workshop**, try to **get the requirements** and please **fill the form** to help me understand your experience level and availability for the introductory Streamlit workshop.
 
 ## About this workshop
 

@@ -315,7 +315,8 @@ def display_workshop_proposed_time_from_snowflake():
 
 def survey_form():
     # Data collection
-    st.header("# Let's get to know each other better")
+    st.markdown("---")
+    st.header("#Let's get to know each other better")
 
     name = st.text_input("Full name:", 
                         placeholder="Enter your name here", 
