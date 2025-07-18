@@ -463,7 +463,7 @@ def main():
     # about()
     read_and_display_markdown("about.md")
     read_and_display_markdown("workshop_requirements.md")
-    # survey_form()
+    survey_form()
 
 if __name__ == "__main__":
     main()
